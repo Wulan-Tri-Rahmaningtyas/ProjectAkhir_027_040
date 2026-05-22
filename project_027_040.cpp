@@ -433,3 +433,49 @@ void cariCustomer(){
         cetakGaris2();
     }
 }
+
+//Menu 6. Reset Antrian (Hari Baru)
+void resetAntrian(){
+    char konfirmasi;
+    cout << "\nReset akan menghapus SEMUA data antrian hari ini." << endl;
+    cout << "    Yakin mau reset? (y/t): ";
+    cin >> konfirmasi;
+
+    if (konfirmasi != 'y' && konfirmasi != 'Y'){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "Reset dibatalkan!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        return;
+    }
+
+    //hapus semua node linked list antrian dari head ke tail
+    NodeAntrian* hapusA; 			//NodeAntrian, namanya hapusA
+    while (headAntrian != NULL){
+        hapusA = headAntrian;
+        headAntrian = headAntrian->next;
+        delete hapusA;
+    }
+    tailAntrian = NULL;
+
+    // hapus semua node linked list riwayat
+    NodeRiwayat* hapusR;			//NodeRiwayat, namanya hapusR.
+    while (headRiwayat != NULL){
+        hapusR = headRiwayat;
+        headRiwayat = headRiwayat->next;
+        delete hapusR;
+    }
+
+    counterAntrian = 0;
+
+    FILE* pfRiwayat = fopen("riwayat_antrian.txt", "w");
+    if (pfRiwayat != NULL) fclose(pfRiwayat);
+
+    FILE* pfCounter = fopen("counter_antrian.txt", "w");
+    if (pfCounter != NULL){
+        fprintf(pfCounter, "%d", 0);
+        fclose(pfCounter);
+    }
+	SetConsoleTextAttribute(hConsole, 4);
+    cout << "Reset berhasil! Nomor antrian akan dimulai dari 1 lagi." << endl;
+    SetConsoleTextAttribute(hConsole, 15);
+}
