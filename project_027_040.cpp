@@ -396,3 +396,40 @@ void tampilRiwayat(){
 	
     for (int i = 0; i < total; i++) delete arrRiwayat[i];
 }
+
+// Menu 5. Cari Customer di Antrian
+void cariCustomer(){
+    char namaCari[50];
+    cout << "\nMasukkan nama customer yang dicari: ";
+    cin.ignore();
+    cin.getline(namaCari, 50);
+
+    NodeAntrian* hasil = sequentialSearch(namaCari);
+
+    if (hasil == NULL){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "\nCustomer " << namaCari << " tidak ditemukan di antrian!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+    }
+    else{
+        int posisi = 1;
+        NodeAntrian* bantu = headAntrian;
+        while (bantu != NULL && bantu->nomorAntrian != hasil->nomorAntrian){
+            posisi++;
+            bantu = bantu->next;
+        }
+        cout << "\n★★ Customer ditemukan!" << endl;
+        cetakGaris2();
+        cout << "No. Antrian	: " << hasil->nomorAntrian << endl;
+        cout << "Posisi Urutan	: " << posisi << " dari depan" << endl;
+        cout << "Nama			: " << hasil->namaCustomer  << endl;
+        cetakGaris2();
+        
+        for (int i = 0; i < hasil->jumlahItem; i++){
+            cout << i + 1 << ". " << left << setw(20) << hasil->daftarPesan[i].namaPesanan << "Rp " << hasil->daftarPesan[i].harga << endl;
+        }
+        cetakGaris2();
+        cout << right << setw(5) << "Total : Rp " << hasil->totalHarga << endl;
+        cetakGaris2();
+    }
+}
