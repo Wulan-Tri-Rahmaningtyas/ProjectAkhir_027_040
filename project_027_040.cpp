@@ -252,8 +252,69 @@ void sisipBelakang(const char* nama, ItemPesanan items[], int jumlah, int total)
     cout << "Total Harga   : Rp " << nodeBaru->totalHarga << endl;
 }
 
+void hapusDepan(){
+    if (headAntrian == NULL){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "\nAntrian kosong, tidak ada yang diproses!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        return;
+    }
 
-// cila hapus depan
+    // simpan pointer head lama, lalu geser head ke node berikutnya
+    NodeAntrian* hapus = headAntrian;
+    headAntrian = headAntrian->next;
+    if (headAntrian == NULL)
+    tailAntrian = NULL;
+
+    cout << "\n★★ Memproses antrian..." << endl;
+    cetakGaris2();
+    cout << "Nomor Antrian : " << hapus->nomorAntrian << endl;
+    cout << "Nama          : " << hapus->namaCustomer  << endl;
+    cetakGaris2();
+    cout << left << setw(4) << "No" << setw(22) << "Menu" << "Harga" << endl;
+    cetakGaris2();
+    for (int i = 0; i < hapus->jumlahItem; i++){
+        cout << left << setw(4) << i + 1 << setw(22)
+			 << hapus->daftarPesan[i].namaPesanan
+             << "Rp " << hapus->daftarPesan[i].harga << endl;
+    }
+    cetakGaris2();
+    cout << right << setw(26) << "Total : Rp " << hapus->totalHarga << endl;
+    cetakGaris2();
+    cout << "★★ Pesanan selesai diproses!" << endl;
+    cout << endl;
+
+    //pindahin data ke linked list riwayat (sisip belakang)
+    NodeRiwayat* nodeRiwayat = new NodeRiwayat;
+    nodeRiwayat->nomorAntrian = hapus->nomorAntrian;
+    nodeRiwayat->jumlahItem   = hapus->jumlahItem;
+    nodeRiwayat->totalHarga   = hapus->totalHarga;
+    nodeRiwayat->next         = NULL;
+
+	//salin karakter satu-satu sampai ketemu '\0', atau sampai akhir nama customernya
+    int i = 0;
+    while (hapus->namaCustomer[i] != '\0'){
+        nodeRiwayat->namaCustomer[i] = hapus->namaCustomer[i];
+        i++;
+    }
+    nodeRiwayat->namaCustomer[i] = '\0';
+
+    for (int j = 0; j < hapus->jumlahItem; j++){
+        nodeRiwayat->daftarPesan[j] = hapus->daftarPesan[j];
+    }
+
+    if (headRiwayat == NULL){
+        headRiwayat = nodeRiwayat;
+    }
+    else{
+        NodeRiwayat* bantu = headRiwayat;
+        while (bantu->next != NULL) bantu = bantu->next;
+        bantu->next = nodeRiwayat;
+    }
+
+    simpanRiwayatKeFile(nodeRiwayat);
+    delete hapus;
+}
 
 // Menu 2.Tampilkan Antrian
 void tampilAntrian(){
@@ -279,4 +340,59 @@ void tampilAntrian(){
         bantu = bantu->next;
         urutan++;
     }
+}
+
+// Menu 4. Tampilkan Riwayat Antrian Selesai
+// baca dari file lalu sort Asc/Desc
+void tampilRiwayat(){
+    NodeRiwayat* arrRiwayat[100];
+    int total = bacaRiwayatDariFile(arrRiwayat, 100);
+
+    if (total == 0){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "\nBelum ada riwayat antrian selesai!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        return;
+    }
+
+    int pilihUrut;
+    cout << "\nTampilkan riwayat dari:" << endl;
+    cout << "1. Antrian Pertama ke Terakhir (Ascending)" << endl;
+    cout << "2. Antrian Terakhir ke Pertama (Descending)" << endl;
+    cout << "Pilihan: ";
+    cin >> pilihUrut;
+
+    if (pilihUrut == 1){
+    bubbleSortRiwayat(arrRiwayat, total, true);
+    cout << "\nUrutan: Antrian Pertama ke Terakhir" << endl;
+    cetakGaris2();
+	}
+	else if (pilihUrut == 2){
+    bubbleSortRiwayat(arrRiwayat, total, false);
+    cout << "\nUrutan: Antrian Terakhir ke Pertama" << endl;
+    cetakGaris2();
+	}
+	else{
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "Pilihan tidak valid!!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        for (int i = 0; i<total; i++) delete arrRiwayat[i];
+        return;
+    }
+
+    for (int i = 0; i < total; i++) {
+        cout << "No. Antrian : " << arrRiwayat[i]->nomorAntrian
+             << "\nNama: " << arrRiwayat[i]->namaCustomer << endl;
+        
+        for (int j = 0; j < arrRiwayat[i]->jumlahItem; j++) {
+            cout << j + 1 << ". " << left << setw(20) << arrRiwayat[i]->daftarPesan[j].namaPesanan
+                 << "Rp " << arrRiwayat[i]->daftarPesan[j].harga << endl;
+        }
+        cout << right << setw(5) << "Total : Rp " << arrRiwayat[i]->totalHarga << endl;
+        cetakGaris2();
+    }
+    cout << "Total selesai diproses: " << total << " antrian" << endl;
+	cout << endl;
+	
+    for (int i = 0; i < total; i++) delete arrRiwayat[i];
 }
