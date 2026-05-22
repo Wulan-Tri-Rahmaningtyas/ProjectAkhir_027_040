@@ -654,3 +654,20 @@ int main(){
         cout << endl;
     }
     while (pilihan != 7);
+    // bebasin memori
+    NodeAntrian* hapusA;
+    while (headAntrian != NULL){
+        hapusA = headAntrian;
+        headAntrian = headAntrian->next;
+        delete hapusA;
+    }
+
+    NodeRiwayat* hapusR;
+    while (headRiwayat != NULL){
+        hapusR = headRiwayat;
+        headRiwayat = headRiwayat->next;
+        delete hapusR;
+    }
+
+    return 0;
+}
