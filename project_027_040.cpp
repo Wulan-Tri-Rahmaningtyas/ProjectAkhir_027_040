@@ -91,9 +91,105 @@ void tampilRingkasanPesanan(const char* nama, ItemPesanan items[], int jumlah, i
     cetakGaris2();
 }
 
-//cila
+void simpanRiwayatKeFile(NodeRiwayat* node){
+    FILE* pf = fopen("riwayat_antrian.txt", "a");
+    if (pf == NULL){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "Gagal menyimpan ke file!!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        return;
+    }
+    fprintf(pf, "%d\n", node->nomorAntrian);
+    fprintf(pf, "%s\n", node->namaCustomer);
+    fprintf(pf, "%d\n", node->jumlahItem);
+    for (int i = 0; i < node->jumlahItem; i++){
+        fprintf(pf, "%s\n", node->daftarPesan[i].namaPesanan);
+        fprintf(pf, "%d\n", node->daftarPesan[i].harga);
+    }
+    fprintf(pf, "%d\n", node->totalHarga);
+    fclose(pf);
+}
 
+int bacaRiwayatDariFile(NodeRiwayat* arrayRiwayat[], int maxData){
+    FILE* pf = fopen("riwayat_antrian.txt", "r");
+    if (pf == NULL)
+    return 0;
 
+    int n = 0;
+    while (n < maxData){
+        NodeRiwayat* node = new NodeRiwayat;
+        node->next = NULL;
+
+        if (fscanf(pf, "%d\n", &node->nomorAntrian) != 1){
+            delete node;
+            break;
+        }
+        if (fgets(node->namaCustomer, 50, pf) == NULL){
+			delete node;
+			break;
+		}
+        int k = 0;
+        while (node->namaCustomer[k] != '\0'){
+            if (node->namaCustomer[k] == '\n'){ 
+				node->namaCustomer[k] = '\0';
+				break;
+			}
+            k++;
+        }
+        if (fscanf(pf, "%d\n", &node->jumlahItem) != 1){
+			delete node;
+			break;
+		}
+
+        bool gagal = false;
+        for (int i = 0; i < node->jumlahItem; i++){
+            if (fgets(node->daftarPesan[i].namaPesanan, 50, pf) == NULL){
+				gagal = true;
+				break;
+			}
+            k = 0;
+            while (node->daftarPesan[i].namaPesanan[k] != '\0'){
+                if (node->daftarPesan[i].namaPesanan[k] == '\n'){
+                    node->daftarPesan[i].namaPesanan[k] = '\0';
+                    break;
+                }
+                k++;
+            }
+            if (fscanf(pf, "%d\n", &node->daftarPesan[i].harga) != 1) {
+				gagal = true; break;
+			}
+        }
+        if (gagal){
+			delete node;
+			break;
+		}
+        if (fscanf(pf, "%d\n", &node->totalHarga) != 1){ 
+			delete node;
+			break;
+		}
+        arrayRiwayat[n] = node;
+        n++;
+    }
+    fclose(pf);
+    return n;
+}
+
+// Sorting BUBBLE SORT
+void bubbleSortRiwayat(NodeRiwayat* arr[], int n, bool ascending){
+    NodeRiwayat* temp;
+    for (int i = 0; i < n - 1; i++){
+        for (int j = 0; j < n - 1 - i; j++){
+            bool tukar = false;
+            if ( ascending && arr[j]->nomorAntrian > arr[j+1]->nomorAntrian) tukar = true;
+            if (!ascending && arr[j]->nomorAntrian < arr[j+1]->nomorAntrian) tukar = true;
+            if (tukar){
+                temp	= arr[j];
+                arr[j]	= arr[j+1];
+                arr[j+1]= temp;
+            }
+        }
+    }
+}
 
 //Searching SEQUENTIAL SEARCH
 NodeAntrian* sequentialSearch(const char* namaCari){
