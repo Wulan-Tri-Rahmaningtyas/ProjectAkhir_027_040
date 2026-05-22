@@ -548,3 +548,109 @@ void tambahAntrian(){
              << cek->nomorAntrian << ")." << endl;
         return;
     }
+
+    prosesInputPesanan(itemDipilih, jumlahItem, totalHarga);
+    bool selesai = false;
+    while (!selesai){
+        tampilRingkasanPesanan(nama, itemDipilih, jumlahItem, totalHarga);
+
+        cout << "\nApakah pesanan sudah sesuai?" << endl;
+        cout << "1. Ya, lanjut ke pembayaran" << endl;
+        cout << "2. Ubah pesanan" << endl;
+        cout << "3. Batalkan pesanan" << endl;
+        cout << "Pilihan: ";
+        int konfirmasi;
+        cin >> konfirmasi;
+
+        if (konfirmasi == 1){
+            sisipBelakang(nama, itemDipilih, jumlahItem, totalHarga); // ganti enqueue
+            selesai = true;
+        }
+        else if (konfirmasi == 2){
+            prosesInputPesanan(itemDipilih, jumlahItem, totalHarga);
+        }
+        else if (konfirmasi == 3){
+			SetConsoleTextAttribute(hConsole, 4);
+            cout << "\nPesanan dibatalkan!" << endl;
+            SetConsoleTextAttribute(hConsole, 15);
+            selesai = true;
+        }
+        else{
+			SetConsoleTextAttribute(hConsole, 4);
+            cout << "Pilihan tidak valid, coba lagi!!" << endl;
+            SetConsoleTextAttribute(hConsole, 15);
+        }
+    }
+}
+
+//Tampilan Menu Utama Keseluruhan
+int main(){
+	//perintah buat ngatur encoding tampilan di console Windows (★)
+	//kalo ga pake setconsole simbol ga kebaca
+	SetConsoleOutputCP(65001);
+
+    counterAntrian = 0;
+    FILE* pfCount = fopen("counter_antrian.txt", "r");
+    if (pfCount != NULL){
+        int savedCounter = 0;
+        fscanf(pfCount, "%d", &savedCounter);
+        fclose(pfCount);
+        
+        if (savedCounter > 0){
+            counterAntrian = savedCounter;
+            cout << "Sesi hari ini dilanjutkan. Counter antrian: "
+                 << counterAntrian << endl;
+        }
+    }
+
+    int pilihan;
+
+    do{
+		SetConsoleTextAttribute(hConsole, 14);
+        cetakGaris();
+        cout << setw(7) << left << " " <<  "Sistem Manajemen Antrian Cafe" << endl;
+        cetakGaris();
+        cout << "1. Tambah Antrian" << endl;
+        cout << "2. Tampilkan Antrian" << endl;
+        cout << "3. Proses Antrian" << endl;
+        cout << "4. Tampilkan Riwayat Antrian Selesai" << endl;
+        cout << "5. Cari Customer di Antrian" << endl;
+        cout << "6. Reset Antrian (Hari Baru)" << endl;
+        cout << "7. Keluar" << endl;
+        cetakGaris();
+        SetConsoleTextAttribute(hConsole, 15);
+        cout << "Pilihan: ";
+        cin >> pilihan;
+        cout << endl;
+
+        switch (pilihan){
+            case 1: 
+            tambahAntrian(); 
+            break;
+            case 2: tampilAntrian();
+            break;
+            case 3: hapusDepan();
+            break;
+            case 4: tampilRiwayat();
+            break;
+            case 5: cariCustomer(); 
+            break;
+            case 6: resetAntrian(); 
+            break;
+            case 7: {
+                FILE* pfSave = fopen("counter_antrian.txt", "w");
+                if (pfSave != NULL){
+                    fprintf(pfSave, "%d", counterAntrian);
+                    fclose(pfSave);
+                }
+                cout << "Program selesai. Sampai jumpa!" << endl;
+                break;
+            }
+            default:
+				SetConsoleTextAttribute(hConsole, 4);
+                cout << "Pilihan tidak valid! Kembali ke menu utama..." << endl;
+                SetConsoleTextAttribute(hConsole, 15);
+        }
+        cout << endl;
+    }
+    while (pilihan != 7);
