@@ -479,3 +479,72 @@ void resetAntrian(){
     cout << "Reset berhasil! Nomor antrian akan dimulai dari 1 lagi." << endl;
     SetConsoleTextAttribute(hConsole, 15);
 }
+
+//Menu dalam Menu 1. Pilih Menu
+void prosesInputPesanan(ItemPesanan itemDipilih[], int &jumlahItem, int &totalHarga){
+    jumlahItem = 0;
+    totalHarga = 0;
+    char tambahLagi;
+    tampilMenuCafe();
+
+    do{
+        if (jumlahItem >= MAX_ITEM){
+            cout << "\nMaksimal " << MAX_ITEM << " item per customer." << endl;
+            break;
+        }
+
+        int pilihanMenu;
+        cout << "\nPilih menu (1-" << JUMLAH_MENU << "): ";
+        cin >> pilihanMenu;
+
+        while (pilihanMenu < 1 || pilihanMenu > JUMLAH_MENU){
+			SetConsoleTextAttribute(hConsole, 4);
+            cout << "Pilihan tidak valid! Masukkan ulang (1-" << JUMLAH_MENU << "): ";
+            SetConsoleTextAttribute(hConsole, 15);
+            cin >> pilihanMenu;
+        }
+
+        itemDipilih[jumlahItem] = daftarMenu[pilihanMenu-1];
+        totalHarga += itemDipilih[jumlahItem].harga;
+        jumlahItem++;
+
+        cout << "[+] " << daftarMenu[pilihanMenu-1].namaPesanan
+             << " ditambahkan ke pesanan." << endl;
+
+        if (jumlahItem < MAX_ITEM){
+			cout << "Tambah pesanan lagi? (y/t): ";
+			cin >> tambahLagi;
+
+			while (tambahLagi != 'y' && tambahLagi != 'Y' && tambahLagi != 't' && tambahLagi != 'T') {
+
+				SetConsoleTextAttribute(hConsole, 4);
+				cout << "Input tidak valid! Masukkan y/t: ";
+				SetConsoleTextAttribute(hConsole, 15);
+
+				cin >> tambahLagi;
+			}
+		}
+		else {
+			tambahLagi = 't';
+		}
+	} while (tambahLagi == 'y' || tambahLagi == 'Y');
+}
+
+//Menu 1. Tambah Antrian
+void tambahAntrian(){
+    char nama[50];
+    ItemPesanan itemDipilih[MAX_ITEM];
+    int jumlahItem = 0;
+    int totalHarga = 0;
+
+    cout << "Masukkan nama customer: ";
+    cin.ignore();
+    cin.getline(nama, 50);
+
+    // cek duplikat pake sequential search
+    NodeAntrian* cek = sequentialSearch(nama);
+    if (cek != NULL){
+        cout << "\nCustomer \"" << nama << "\" sudah ada di antrian (No. "
+             << cek->nomorAntrian << ")." << endl;
+        return;
+    }
