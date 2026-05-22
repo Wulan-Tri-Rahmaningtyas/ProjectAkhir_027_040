@@ -251,3 +251,32 @@ void sisipBelakang(const char* nama, ItemPesanan items[], int jumlah, int total)
     cout << "Jumlah Item   : " << nodeBaru->jumlahItem << " item" << endl;
     cout << "Total Harga   : Rp " << nodeBaru->totalHarga << endl;
 }
+
+
+// cila hapus depan
+
+// Menu 2.Tampilkan Antrian
+void tampilAntrian(){
+    if (headAntrian == NULL){
+		SetConsoleTextAttribute(hConsole, 4);
+        cout << "\nAntrian kosong!!" << endl;
+        SetConsoleTextAttribute(hConsole, 15);
+        return;
+    }
+
+    cetakJudul("DAFTAR ANTRIAN SAAT INI");
+    NodeAntrian* bantu = headAntrian;
+    int urutan = 1;
+    while (bantu != NULL){
+        cout << "Urutan ke-" << urutan << "\nNo. Antrian: " << bantu->nomorAntrian << "\nNama: " << bantu->namaCustomer << endl;
+        cout << "Pesanan : " << endl;
+
+        for (int i = 0; i < bantu->jumlahItem; i++){
+            cout << i + 1 << ". " << left << setw(20) << bantu->daftarPesan[i].namaPesanan << "Rp " << bantu->daftarPesan[i].harga << endl;
+        } 
+        cout << right << setw(10) << "Total : Rp " << bantu->totalHarga << endl;
+        cetakGaris2();
+        bantu = bantu->next;
+        urutan++;
+    }
+}
