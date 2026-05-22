@@ -90,3 +90,68 @@ void tampilRingkasanPesanan(const char* nama, ItemPesanan items[], int jumlah, i
     cout << right << setw(26) << "Total : Rp " << total << endl;
     cetakGaris2();
 }
+
+//cila
+
+
+
+//Searching SEQUENTIAL SEARCH
+NodeAntrian* sequentialSearch(const char* namaCari){
+    NodeAntrian* bantu = headAntrian;
+    while (bantu != NULL){
+        bool cocok = true;
+        int i = 0;
+        while (namaCari[i] != '\0' || bantu->namaCustomer[i] != '\0'){
+            if (bantu->namaCustomer[i] != namaCari[i]){
+                cocok = false;
+                break;
+            }
+            i++;
+        }
+        if (cocok) return bantu;
+        bantu = bantu->next;
+    }
+    return NULL;
+}
+
+//Linked list ANTRIAN
+// sisipBelakang = tambah node di akhir linked list
+// hapusDepan = hapus node di awal linked list
+
+void sisipBelakang(const char* nama, ItemPesanan items[], int jumlah, int total){
+    NodeAntrian* nodeBaru = new NodeAntrian; //memindahkan node baru pakai pointer
+
+    counterAntrian++;
+    nodeBaru->nomorAntrian = counterAntrian;
+    nodeBaru->jumlahItem   = jumlah;
+    nodeBaru->totalHarga   = total;
+    nodeBaru->next         = NULL;
+
+    //nyalin karakter
+    int i = 0;
+    while (nama[i] != '\0'){
+        nodeBaru->namaCustomer[i] = nama[i];
+        i++;
+    }
+    nodeBaru->namaCustomer[i] = '\0';
+
+    for (int j = 0; j < jumlah; j++){
+        nodeBaru->daftarPesan[j] = items[j];
+    }
+
+    // sisip di belakang: klo list kosong, head & tail = node baru
+    // kalo ga kosong, sambungin tail lama ke node baru, lalu geser tail
+    if (headAntrian == NULL){
+        headAntrian = nodeBaru; //head = orang paling depan
+        tailAntrian = nodeBaru; //tail = orang paling belakang
+    }
+    else{
+        tailAntrian->next = nodeBaru;
+        tailAntrian = nodeBaru;
+    }
+    cout << "\n★★ Antrian berhasil ditambahkan!" << endl;
+    cout << "Nomor Antrian : " << nodeBaru->nomorAntrian << endl;
+    cout << "Nama          : " << nodeBaru->namaCustomer << endl;
+    cout << "Jumlah Item   : " << nodeBaru->jumlahItem << " item" << endl;
+    cout << "Total Harga   : Rp " << nodeBaru->totalHarga << endl;
+}
